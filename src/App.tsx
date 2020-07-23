@@ -9,6 +9,16 @@ function App() {
   const [data, setData] = React.useState<val[]>();
   const [display, setDisplay] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  React.useEffect(() => {
+    axios
+      .get("http://localhost:3000/create-table")
+      .then((res) => {
+        alert(res.data.msg);
+      })
+      .catch((err) => {
+        console.log("err", err);
+      });
+  }, []);
 
   const DisplayTable = () => {
     GetData();

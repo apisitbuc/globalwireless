@@ -11,18 +11,28 @@ var port = 3000;
 
 app.get("/create-table", function (req, res) {
   // open database in memory
+  let result = {}
   db.serialize(() => {
     // Queries scheduled here will be serialized.
     db.run(
       `CREATE TABLE globalwireless (
-          valueNumber INTEGER 
-        );`,
+            valueNumber INTEGER 
+          );`,
       function (err) {
         if (err) {
-          res.send(err.message);
+          result = {
+            returnCode: "500",
+            msg: err.message,
+          };
         }
-        console.log(`create table success`);
-        res.json(`create table success`);
+        else{
+          result = {
+            returnCode: "200",
+            msg: `create table success`,
+          };
+        }
+       
+        res.json(result);
       }
     );
   });
@@ -88,9 +98,9 @@ const findVal = async () => {
 
 app.get("/findZero", async (req, res) => {
   let result = await findvalzero();
-  console.log(result)
+  console.log(result);
   let t = getNumberGame(1000, 10);
-  console.log(t)
+  console.log(t);
   res.json(result);
 });
 
@@ -128,66 +138,70 @@ const DeleteData = () => {
   });
 };
 
-
 function getNumberGame(target, length) {
-    var dataset = [];
-    var methods = {
-        'add' : function (a, b) {
-            return (a + b);
-        },
-        'subtract' : function (a, b) {
-            return a - b;
-        },
-        'multiply' : function (a, b) {
-            if (a !== 0 && b !== 0 && a < Infinity && b < Infinity) {
-                return Math.round(a * b);
-            } else {
-                return false;
-            }
-        },
-        'divide' : function (a, b) {
-            if (a !== 0 && b !== 0 && a < Infinity && b < Infinity) {
-                return Math.round(a / b);
-            } else {
-                return false;
-            }
-        }
-    }
-    for (var i = 0; i < length - 1; i++) {
-        var obj = {
-            value : Math.round(Math.random().toFixed(2) * target) + 1,
-            method : Object.keys(methods)[Math.floor(Math.random() * Object.keys(methods).length)]
-        };
-        console.log(obj.value)
-        console.log(obj)
-        dataset.push(obj);
-    }
-    delete dataset[0].method;
-    var data = dataset[0].value * 1;
-    console.log('Start with ' + data);
-    for (var i = 1; i < dataset.length; i++) {
-        data = methods[dataset[i].method](data, dataset[i].value);
-        console.log(dataset[i].method + " " + dataset[i].value + " to get " + data);
-    }
-    if (data > target) {
-        dataset.push({
-            value : Math.round(Math.abs(data - target)),
-            method : 'subtract'
-        });
-        console.log("subtract " + dataset[dataset.length - 1].value + " to get " + target);
-    } else if (data < target) {
-        dataset.push({
-            value : Math.round(Math.abs(data - target)),
-            method : 'add'
-        });
-        console.log("add " + dataset[dataset.length - 1].value + " to get " + target);
-    }
-    var returnArray = [];
-    while (dataset.length > 0) {
-        var i = Math.floor(Math.random() * dataset.length);
-        returnArray.push(dataset[i].value);
-        dataset.splice(i, 1);
-    }
-    return returnArray;
+  var dataset = [];
+  var methods = {
+    add: function (a, b) {
+      return a + b;
+    },
+    subtract: function (a, b) {
+      return a - b;
+    },
+    multiply: function (a, b) {
+      if (a !== 0 && b !== 0 && a < Infinity && b < Infinity) {
+        return Math.round(a * b);
+      } else {
+        return false;
+      }
+    },
+    divide: function (a, b) {
+      if (a !== 0 && b !== 0 && a < Infinity && b < Infinity) {
+        return Math.round(a / b);
+      } else {
+        return false;
+      }
+    },
+  };
+  for (var i = 0; i < length - 1; i++) {
+    var obj = {
+      value: Math.round(Math.random().toFixed(2) * target) + 1,
+      method: Object.keys(methods)[
+        Math.floor(Math.random() * Object.keys(methods).length)
+      ],
+    };
+    console.log(obj.value);
+    console.log(obj);
+    dataset.push(obj);
+  }
+  delete dataset[0].method;
+  var data = dataset[0].value * 1;
+  console.log("Start with " + data);
+  for (var i = 1; i < dataset.length; i++) {
+    data = methods[dataset[i].method](data, dataset[i].value);
+    console.log(dataset[i].method + " " + dataset[i].value + " to get " + data);
+  }
+  if (data > target) {
+    dataset.push({
+      value: Math.round(Math.abs(data - target)),
+      method: "subtract",
+    });
+    console.log(
+      "subtract " + dataset[dataset.length - 1].value + " to get " + target
+    );
+  } else if (data < target) {
+    dataset.push({
+      value: Math.round(Math.abs(data - target)),
+      method: "add",
+    });
+    console.log(
+      "add " + dataset[dataset.length - 1].value + " to get " + target
+    );
+  }
+  var returnArray = [];
+  while (dataset.length > 0) {
+    var i = Math.floor(Math.random() * dataset.length);
+    returnArray.push(dataset[i].value);
+    dataset.splice(i, 1);
+  }
+  return returnArray;
 }
-
